@@ -1,0 +1,33 @@
+body {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+#grid {
+  width:400px;
+  height:400px;
+  display: flex;
+  flex-direction: column;
+}
+
+#sub-grid {
+  flex: 1;
+  display: flex;
+}
+
+#area {
+  flex: 0.3;
+  border:1px solid #ddd;
+  background:#fff;
+  font-size:32px;
+  float:left;
+}
+
+#area:focus {
+  outline: none;
+}
