@@ -1,29 +1,35 @@
+let socket = io();
+
 let dimensions;
 
-let current_player = 1;
-
 let track = [];
+let players = [];
 
-const map = (x, y) => {
-  let move = document.querySelector(`.area_${x}_${y}`);
-
-  let obj = {};
-  obj.player = current_player;
-
-  if (current_player === 1) {
-    move.innerHTML = "O";
-    move.disabled = true;
-    current_player = 2;
-  } else if (current_player === 2) {
-    move.innerHTML = "X";
-    move.disabled = true;
-    current_player = 1;
+const map = (x, y, player) => {
+  let current = player || socket.id
+  
+  let move = {
+    player: current,
+    position: {
+      x: x,
+      y: y
+    }
   }
 
-  obj.position  = { x, y };
+  let mvDOM = document.querySelector(`.area_${x}_${y}`);
 
-  track.push(obj);
-  mapTrack(x, y);
+  if (current === socket.id) {
+    mvDOM.innerHTML = "O";
+    socket.emit('move', move)
+  } else {
+    mvDOM.innerHTML = "X";
+  }
+
+  mvDOM.disabled = true;
+  
+  track.push(move);
+
+  mapTrack();
 }
 
 const victory = (player) => {
@@ -51,26 +57,26 @@ const reset = () => {
 const mapTrack = () => {
   for (let i = 0; i < dimensions; i++) {
     // For X-axis
-    let p1xm = track.filter(t => t.player == 1 && t.position.x == i + 1).length;
-    let p2xm = track.filter(t => t.player == 2 && t.position.x == i + 1).length;
+    let p1xm = track.filter(t => t.player == players[0] && t.position.x == i + 1).length;
+    let p2xm = track.filter(t => t.player == players[1] && t.position.x == i + 1).length;
 
     // For Y-axis
-    let p1ym = track.filter(t => t.player == 1 && t.position.y == i + 1).length;
-    let p2ym = track.filter(t => t.player == 2 && t.position.y == i + 1).length;
+    let p1ym = track.filter(t => t.player == players[0] && t.position.y == i + 1).length;
+    let p2ym = track.filter(t => t.player == players[1] && t.position.y == i + 1).length;
 
     // Diagonal 1 Cases
-    let p1d1m = track.filter(t => t.player == 1 && t.position.x == t.position.y).length;
-    let p1d2m = track.filter(t => t.player == 1 && (t.position.x + t.position.y == dimensions + 1)).length;
+    let p1d1m = track.filter(t => t.player == players[0] && t.position.x == t.position.y).length;
+    let p1d2m = track.filter(t => t.player == players[1] && (t.position.x + t.position.y == dimensions + 1)).length;
 
     // Diagonal 2 Case
-    let p2d1m = track.filter(t => t.player == 2 && t.position.x == t.position.y).length;
-    let p2d2m = track.filter(t => t.player == 2 && (t.position.x + t.position.y == dimensions + 1)).length;
+    let p2d1m = track.filter(t => t.player == players[0] && t.position.x == t.position.y).length;
+    let p2d2m = track.filter(t => t.player == players[1] && (t.position.x + t.position.y == dimensions + 1)).length;
 
     if (p1xm == dimensions || p1ym == dimensions || p1d1m == dimensions || p1d2m == dimensions) {
-      victory(1);
+      victory(players[0]);
     }
     if (p2xm == dimensions || p2ym == dimensions || p2d1m == dimensions || p2d2m == dimensions) {
-      victory(2);
+      victory(players[1]);
     }
     if (track.length == dimensions * dimensions) {
       victory(0);
@@ -95,3 +101,13 @@ const generateBoard = (dim) => {
     grid.appendChild(subGrid);
   }
 }
+
+socket.on('players', (p) => {
+  players = p;
+})
+
+socket.on('move', move => {
+  if (move.player !== socket.id) {
+    map(move.position.x, move.position.y, move.player)
+  }
+})
