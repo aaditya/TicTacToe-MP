@@ -7,10 +7,8 @@ let track = [];
 const map = (x, y) => {
   let move = document.querySelector(`.area_${x}_${y}`);
 
-  track.push({
-    "player": current_player,
-    "position": { x, y }
-  })
+  let obj = {};
+  obj.player = current_player;
 
   if (current_player === 1) {
     move.innerHTML = "O";
@@ -22,12 +20,19 @@ const map = (x, y) => {
     current_player = 1;
   }
 
+  obj.position  = { x, y };
+
+  track.push(obj);
   mapTrack(x, y);
 }
 
-const victory = () => {
+const victory = (player) => {
   reset();
-  alert("Player " + current_player + " wins !");
+  if (player == 0) {
+    alert("Match is a draw.");
+  } else {
+    alert("Player " + player + " wins !");
+  }
 }
 
 const reset = () => {
@@ -43,65 +48,35 @@ const reset = () => {
   }
 }
 
-// const mapTrack = (x, y) => {
-//   for (let i = 0; i < dimensions; i++) {
-//     // For X-axis
-//     let p1xm = track.filter(t => t.player == 1 && t.position.x == i + 1).length;
-//     let p2xm = track.filter(t => t.player == 2 && t.position.x == i + 1).length;
-
-//     // For Y-axis
-//     let p1ym = track.filter(t => t.player == 1 && t.position.y == i + 1).length;
-//     let p2ym = track.filter(t => t.player == 2 && t.position.y == i + 1).length;
-
-//     // Diagonal Cases
-//     let p1dm = track.filter(t => t.player == 1 && t.position.x == t.position.y).length;
-//     let p2dm = track.filter(t => t.player == 2 && t.position.x == t.position.y).length;
-
-//     if (p1xm == 3 || p1ym == 3 || p1dm == 3) {
-//       victory(1);
-//     }
-//     if (p2xm == 3 || p2ym == 3 || p2dm == 3) {
-//       victory(2);
-//     }
-//   }
-
-// }
-
 const mapTrack = () => {
+  for (let i = 0; i < dimensions; i++) {
+    // For X-axis
+    let p1xm = track.filter(t => t.player == 1 && t.position.x == i + 1).length;
+    let p2xm = track.filter(t => t.player == 2 && t.position.x == i + 1).length;
 
-  const p1m = track.filter(move => move.player == 1);
-  const p2m = track.filter(move => move.player == 2);
+    // For Y-axis
+    let p1ym = track.filter(t => t.player == 1 && t.position.y == i + 1).length;
+    let p2ym = track.filter(t => t.player == 2 && t.position.y == i + 1).length;
 
-  // horizontal and diagonal check;
-  const p1ym = p1m.map(move => move.position.y).sort();
-  const p2ym = p2m.map(move => move.position.y).sort();
-  if (p1ym.length == 3 && checkHorDiaCondition(p1ym)) {
-    victory(1);
+    // Diagonal 1 Cases
+    let p1d1m = track.filter(t => t.player == 1 && t.position.x == t.position.y).length;
+    let p1d2m = track.filter(t => t.player == 1 && (t.position.x + t.position.y == dimensions + 1)).length;
+
+    // Diagonal 2 Case
+    let p2d1m = track.filter(t => t.player == 2 && t.position.x == t.position.y).length;
+    let p2d2m = track.filter(t => t.player == 2 && (t.position.x + t.position.y == dimensions + 1)).length;
+
+    if (p1xm == dimensions || p1ym == dimensions || p1d1m == dimensions || p1d2m == dimensions) {
+      victory(1);
+    }
+    if (p2xm == dimensions || p2ym == dimensions || p2d1m == dimensions || p2d2m == dimensions) {
+      victory(2);
+    }
+    if (track.length == dimensions * dimensions) {
+      victory(0);
+    }
   }
-  if (p2ym.length == 3 && checkHorDiaCondition(p2ym)) {
-    victory(2);
-  }
-
-  // vertical condition
-  const p1xm = p1m.map(move => move.position.x).sort();
-  const p2xm = p2m.map(move => move.position.x).sort();
-
-  if (p1xm.length == 3 && checkHorDiaCondition(p1xm)) {
-    victory(1);
-  }
-  if (p2ym.length == 3 && checkHorDiaCondition(p2ym)) {
-    victory(2);
-  }
-
 }
-
-
-const checkHorDiaCondition = (arr) => {
-  const [first, second, third] = arr;
-  return first == 1 && second == 2 && third == 3
-}
-
-
 
 const generateBoard = (dim) => {
   dimensions = dim;

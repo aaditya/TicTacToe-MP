@@ -8,6 +8,8 @@ app.get("/", (req, res) => {
     res.sendFile("public/index.html");
 })
 
-app.listen(3000)
+app.listen(3000, () => {
+    console.log("Server listening.")
+})
 
 module.exports = app;
