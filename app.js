@@ -14,19 +14,29 @@ const server = http.createServer(app);
 // Initialize Server
 const io = require("socket.io")(server);
 
-let players = []
+let players = [];
+let pool = [];
 
 io.on('connection', function (socket) {
-    players.push(socket.id);
-
-    if (players.length == 2) {
+    if (players.length < 2) {
+        players.push(socket.id);
         io.emit('players', players);
+    } else if (players.length >= 2) {
+        pool.push(socket.id);
     }
 
     socket.on('disconnect', (reason) => {
-        let playerIndex = players.indexOf(socket.id);
-        players.splice(playerIndex, 1);
-        io.emit('players', players);
+        if (players.includes(socket.id)) {
+            let playerIndex = players.indexOf(socket.id);
+            players.splice(playerIndex, 1);
+            if (pool.length > 0) {
+                players.push(pool.shift());
+            }
+            io.emit('players', players);
+        } else if (pool.includes(socket.id)) {
+            let playerIndex = pool.indexOf(socket.id);
+            pool.splice(playerIndex, 1);
+        }
     });
 
     socket.on('move', function (move) {
