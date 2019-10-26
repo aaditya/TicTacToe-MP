@@ -26,6 +26,7 @@ io.on('connection', function (socket) {
     socket.on('disconnect', (reason) => {
         let playerIndex = players.indexOf(socket.id);
         players.splice(playerIndex, 1);
+        io.emit('players', players);
     });
 
     socket.on('move', function (move) {

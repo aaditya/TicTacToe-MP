@@ -5,7 +5,12 @@ let dimensions;
 let track = [];
 let players = [];
 
+let lastMove;
+
 const map = (x, y, player) => {
+  if (players.length < 2 || (lastMove && lastMove == socket.id)) {
+    return;
+  }
   let current = player || socket.id
   
   let move = {
@@ -30,6 +35,8 @@ const map = (x, y, player) => {
   track.push(move);
 
   mapTrack();
+
+  lastMove = current;
 }
 
 const victory = (player) => {
@@ -103,11 +110,13 @@ const generateBoard = (dim) => {
 }
 
 socket.on('players', (p) => {
+  reset();
   players = p;
 })
 
 socket.on('move', move => {
   if (move.player !== socket.id) {
+    lastMove = move.player;
     map(move.position.x, move.position.y, move.player)
   }
 })
