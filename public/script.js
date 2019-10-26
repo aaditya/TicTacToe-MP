@@ -11,8 +11,9 @@ const map = (x, y, player) => {
   if (players.length < 2 || (lastMove && lastMove == socket.id)) {
     return;
   }
+
   let current = player || socket.id
-  
+
   let move = {
     player: current,
     position: {
@@ -23,15 +24,18 @@ const map = (x, y, player) => {
 
   let mvDOM = document.querySelector(`.area_${x}_${y}`);
 
-  if (current === socket.id) {
+  if (current === players[0]) {
     mvDOM.innerHTML = "O";
-    socket.emit('move', move)
-  } else {
+  } else if (current === players[1]) {
     mvDOM.innerHTML = "X";
   }
 
+  if (players.includes(socket.id) && (current === socket.id)) {
+    socket.emit('move', move)
+  }
+
   mvDOM.disabled = true;
-  
+
   track.push(move);
 
   mapTrack();
@@ -110,7 +114,9 @@ const generateBoard = (dim) => {
 }
 
 socket.on('players', (p) => {
-  reset();
+  if (p.length !== 2) {
+    reset();
+  }
   players = p;
 })
 

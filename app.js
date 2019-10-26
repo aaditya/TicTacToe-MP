@@ -20,10 +20,11 @@ let pool = [];
 io.on('connection', function (socket) {
     if (players.length < 2) {
         players.push(socket.id);
-        io.emit('players', players);
     } else if (players.length >= 2) {
         pool.push(socket.id);
     }
+
+    io.emit('players', players);
 
     socket.on('disconnect', (reason) => {
         if (players.includes(socket.id)) {
