@@ -66,6 +66,14 @@ const reset = () => {
 }
 
 const mapTrack = () => {
+  // Diagonal 1 Cases
+  let p1d1m = track.filter(t => t.player == players[0] && t.position.x == t.position.y).length;
+  let p1d2m = track.filter(t => t.player == players[1] && (t.position.x + t.position.y == dimensions + 1)).length;
+
+  // Diagonal 2 Case
+  let p2d1m = track.filter(t => t.player == players[0] && t.position.x == t.position.y).length;
+  let p2d2m = track.filter(t => t.player == players[1] && (t.position.x + t.position.y == dimensions + 1)).length;
+  
   for (let i = 0; i < dimensions; i++) {
     // For X-axis
     let p1xm = track.filter(t => t.player == players[0] && t.position.x == i + 1).length;
@@ -74,14 +82,6 @@ const mapTrack = () => {
     // For Y-axis
     let p1ym = track.filter(t => t.player == players[0] && t.position.y == i + 1).length;
     let p2ym = track.filter(t => t.player == players[1] && t.position.y == i + 1).length;
-
-    // Diagonal 1 Cases
-    let p1d1m = track.filter(t => t.player == players[0] && t.position.x == t.position.y).length;
-    let p1d2m = track.filter(t => t.player == players[1] && (t.position.x + t.position.y == dimensions + 1)).length;
-
-    // Diagonal 2 Case
-    let p2d1m = track.filter(t => t.player == players[0] && t.position.x == t.position.y).length;
-    let p2d2m = track.filter(t => t.player == players[1] && (t.position.x + t.position.y == dimensions + 1)).length;
 
     if (p1xm == dimensions || p1ym == dimensions || p1d1m == dimensions || p1d2m == dimensions) {
       victory(players[0]);
