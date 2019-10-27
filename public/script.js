@@ -38,7 +38,7 @@ const map = (x, y, player) => {
 
   track.push(move);
 
-  mapTrack();
+  setTimeout(() => {mapTrack()}, 100);
 
   lastMove = current;
 }
@@ -54,7 +54,7 @@ const victory = (player) => {
 
 const reset = () => {
   track = [];
-  current_player = 1;
+  lastMove = undefined;
 
   for (let i = 0; i < dimensions; i++) {
     for (let j = 0; j < dimensions; j++) {
@@ -85,11 +85,9 @@ const mapTrack = () => {
 
     if (p1xm == dimensions || p1ym == dimensions || p1d1m == dimensions || p1d2m == dimensions) {
       victory(players[0]);
-    }
-    if (p2xm == dimensions || p2ym == dimensions || p2d1m == dimensions || p2d2m == dimensions) {
+    } else if (p2xm == dimensions || p2ym == dimensions || p2d1m == dimensions || p2d2m == dimensions) {
       victory(players[1]);
-    }
-    if (track.length == dimensions * dimensions) {
+    } else if (track.length == dimensions * dimensions) {
       victory(0);
     }
   }
