@@ -8,6 +8,9 @@ function generateBoard(dim) {
   track = new Array(dimSq).fill(null);
   // Create the DOM Play Grid
   const grid = document.getElementById("grid");
+  
+  // Reset the grid in case it already exists.
+  grid.innerHTML = "";
 
   let playCounter = 0;
   for (let i = 0; i < dim; i++) {
